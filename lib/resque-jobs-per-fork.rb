@@ -34,6 +34,10 @@ module Resque
 
   class Worker
 
+    def done_working
+      redis.del("worker:#{self}")
+    end
+
     def perform_with_jobs_per_fork(job)
       raise "You need to set JOBS_PER_FORK on the command line" unless ENV['JOBS_PER_FORK']
       run_hook :before_perform_jobs_per_fork, self
@@ -47,6 +51,7 @@ module Resque
         else
           break # to prevent looping/hammering Redis with LPOPs
         end
+        processed!
         jobs_performed += 1
       end
       jobs_performed = nil
