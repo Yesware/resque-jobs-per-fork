@@ -48,6 +48,7 @@ module Resque
         if jobs_performed == 0
           perform_without_jobs_per_fork(job)
         elsif another_job = reserve
+          working_on another_job
           perform_without_jobs_per_fork(another_job)
         else
           break # to prevent looping/hammering Redis with LPOPs
